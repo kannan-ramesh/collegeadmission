@@ -1,0 +1,18 @@
+{
+	"students": {
+		"1001": {
+			"FeesPaid": true,
+			"Gender": "male",
+			"Course": "bca",
+			"Marks": 899,
+			"Name": "Elango"
+		},
+		"1000": {
+			"FeesPaid": false,
+			"Gender": "male",
+			"Course": "bca",
+			"Marks": 888,
+			"Name": "Sam"
+		}
+	}
+}

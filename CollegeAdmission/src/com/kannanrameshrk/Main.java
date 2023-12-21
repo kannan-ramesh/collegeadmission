@@ -7,13 +7,15 @@ import com.kannanrameshrk.admission.admin.AdminView;
 import com.kannanrameshrk.admission.student.StudentView;
 
 public class Main {
-	static Stack<Object> backStack=new Stack(); 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static Stack<Object> backStack=new Stack();
 	public static void main(String[] args) {
 		Main main=new Main();
 		main.start();
 	}
 
 	public void start() {
+		@SuppressWarnings("resource")
 		Scanner input =new Scanner(System.in);
 		boolean loop=true;
 		while(loop){
@@ -21,7 +23,17 @@ public class Main {
 			System.out.println("---------------------");
 			System.out.println(" 1.Admin\n 2.Student\n 3.Exit");
 			System.out.println("Enter your Option:");
-			int choice =input.nextInt();
+			int choice;
+			while(true) {
+				if(input.hasNextInt()) {
+					choice = input.nextInt();
+					break;
+				}else {
+					input.next();
+					System.out.println("Invalid user option,enter number only..");
+				}
+				
+			}
 				switch(choice) {
 					case 1:{
 						AdminView adminview=new AdminView();

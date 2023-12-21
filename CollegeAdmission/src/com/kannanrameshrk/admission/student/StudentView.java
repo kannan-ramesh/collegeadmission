@@ -3,15 +3,12 @@ package com.kannanrameshrk.admission.student;
 import java.util.Scanner;
 import java.util.Stack;
 
-import org.json.simple.JSONObject;
-
 import com.kannanrameshrk.Navigate;
-import com.kannanrameshrk.admission.dto.Course;
 import com.kannanrameshrk.admission.dto.Student;
 
 public class StudentView {
 	private StudentViewModel studentviewmodel;
-	
+
 	public StudentView() {
 		this.studentviewmodel=new StudentViewModel(this);
 	}
@@ -23,7 +20,7 @@ public class StudentView {
 		Scanner input=new Scanner(System.in);
 		System.out.println("Enter your option");
 		int choice=input.nextInt();
-		
+
 		switch(choice) {
 		case 1 :{
 			System.out.println("view Course");
@@ -45,7 +42,7 @@ public class StudentView {
 			System.out.println("Fees Paid in Online(Yes/No):");
 			String feesPaidInput=input.next().toLowerCase();
 			boolean feesPaid = feesPaidInput.equals("yes") || feesPaidInput.equals("No");
-			
+
 			Student student=new Student(name,gender,course,marks,feesPaid);
 			studentviewmodel.validate(student);
 			break;

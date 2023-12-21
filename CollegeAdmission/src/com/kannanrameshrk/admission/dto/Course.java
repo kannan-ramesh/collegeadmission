@@ -4,8 +4,8 @@ public class Course {
 	private String courseName;
 	private int seatCount;
 	private double fees;
-	
-	
+
+
 	public Course(String cName, int totalSeat, double fees) {
 		this.courseName=cName;
 		this.seatCount=totalSeat;

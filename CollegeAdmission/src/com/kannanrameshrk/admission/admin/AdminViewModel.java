@@ -7,18 +7,18 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
 class AdminViewModel {
 	private AdminView adminview;
-	
+
 	public AdminViewModel(AdminView adminView) {
 		this.adminview= adminView;
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean validate(Course c) {
-		
+
 		boolean courseNameIsValid=validCName(c.getCourseName());
 		boolean seatCountIsValid=validSeatCount(c.getSeatCount());
 		boolean feesIsValid=validFees(c.getFees());
-		
+
 		if(courseNameIsValid && seatCountIsValid && feesIsValid ) {
 			 JSONObject courseDetails = new JSONObject();
 			 courseDetails.put("CourseName", c.getCourseName());
@@ -74,6 +74,8 @@ class AdminViewModel {
 
 	            System.out.printf("%s   %s   %s     %s      %s%n", studentId, name, gender, course, feesPaidStatus);
 	        }
+	    }else {
+	    	adminview.showError("Student not Registor in courses");
 	    }
 	}
 

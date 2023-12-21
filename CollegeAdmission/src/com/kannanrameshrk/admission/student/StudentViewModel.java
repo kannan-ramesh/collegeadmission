@@ -9,7 +9,7 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
  class StudentViewModel {
 	private StudentView studentview;
-	
+
 	public StudentViewModel(StudentView studentView) {
 		this.studentview=studentView;
 	}
@@ -19,8 +19,8 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 		boolean genderIsValid=genderValid(student.getGender());
 		//boolean courseIsValid=courseValid(student.getSelectCourse());
 		boolean marksIsValid=marksValid(student.getMarks());
-		
-		if(nameIsValid && genderIsValid &&  marksIsValid) {
+
+		if(nameIsValid && genderIsValid &&  marksIsValid ) {
 			studentview.onSucess("Sucessfully Registered");
 			AdmissionRespository.getInstance().insertStudent(student);
 		}else {
@@ -38,18 +38,18 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
 	private boolean courseValid(String selectCourse) {
 		AdmissionRespository.getInstance();
-		JSONObject obj=AdmissionRespository.adminData;
-	
+		JSONObject obj=AdmissionRespository.loadAdminData();
+
 		 if (obj != null) {
 		        JSONObject adminCourses = (JSONObject) obj.get("admin");
 		        if (adminCourses != null && ((Map) adminCourses).containsKey(selectCourse)) {
-		            return true; 
+		            return true;
 		        } else {
 		            studentview.showErr("Invalid course selection");
 		            return false;
 		        }
 		    } else {
-		        studentview.showErr("Error: Unable to load course data");
+		        studentview.showErr("Course are Not Avalaible in RK college");
 		        return false;
 		    }
 	}
@@ -63,7 +63,7 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 	}
 
 	private boolean nameValid(String name) {
-		if(name.length()>3 && name.length()<50 && name.matches("[a-zA-Z]+")) {
+		if(name.length()>=3 && name.length()<=50 && name.matches("[a-zA-Z]+")) {
 			return true;
 		}
 		studentview.showErr("Invali name, name length is min->3 max->50 only a-z");
@@ -86,6 +86,8 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
 			        System.out.printf("%s\t%d\t%.1f%n", courseName, seatCount, fees);
 			    }
+			}else {
+				studentview.showErr("No Data Available...");
 			}
 	}
 }

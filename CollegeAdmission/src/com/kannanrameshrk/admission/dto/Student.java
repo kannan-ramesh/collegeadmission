@@ -1,14 +1,14 @@
 package com.kannanrameshrk.admission.dto;
 
 public class Student {
-	private static int idCounter = 1000;
+	private static int lastAssignedId = 1000;
 	private int id;
 	private String name;
 	private String gender;
 	private String selectCourse;
 	private int marks;
 	private boolean feesPaid;
-	
+
 	public Student(String name, String gender, String course, int marks, boolean feesPaid) {
 		this.id = generateID();
 		this.name=name;
@@ -17,10 +17,12 @@ public class Student {
 		this.marks=marks;
 		this.feesPaid=feesPaid;
 	}
+
 	private int generateID() {
-		
-		return idCounter++;
+		lastAssignedId= lastAssignedId+1;
+		return lastAssignedId;
 	}
+
 	public int getId() {
 		return id;
 	}
@@ -51,7 +53,7 @@ public class Student {
 	public void setMarks(int marks) {
 		this.marks = marks;
 	}
-	
+
 	public boolean isFeesPaid() {
 		return feesPaid;
 	}
