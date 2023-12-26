@@ -1,6 +1,8 @@
 package com.kannanrameshrk.admission.dto;
 
-public class Student {
+import java.util.Comparator;
+
+public class Student{
 	private static int lastAssignedId = 1000;
 	private int id;
 	private String name;

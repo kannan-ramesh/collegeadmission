@@ -1,20 +1,18 @@
 package com.kannanrameshrk.admission.repository;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
+import com.kannanrameshrk.admission.dto.Course;
 import com.kannanrameshrk.admission.dto.Student;
 
 public class AdmissionRespository {
 	public static AdmissionRespository repository;
-	public static JSONObject adminData = new JSONObject(); 
-	public static JSONObject studentData = new JSONObject();
+	
 	
 	private AdmissionRespository() {
 
@@ -26,112 +24,111 @@ public class AdmissionRespository {
 		}
 		return repository;
 	}
-
+	
+	
 	@SuppressWarnings("unchecked")
-	public boolean insertCource(JSONObject course) {
-		 String path = "C:\\Users\\kanna\\git\\collegeadmission\\CollegeAdmission\\src\\adminData.json";
+	public boolean insertCource(Course c) {
+		  Connection con = null;
+		    PreparedStatement pstmt = null;
+
+		    String sql = "INSERT INTO Courses (CourseName, SeatCount, Fees) VALUES (?, ?, ?)";
+
 		    try {
-		        File file = new File(path);
-		        JSONObject existingData;
+		        con = DataConnection.getConnection();
+		        pstmt = con.prepareStatement(sql);
 		        
-		        if (file.exists() && file.length() > 0) {
-		            JSONParser parser = new JSONParser();
-		            existingData = (JSONObject) parser.parse(new FileReader(path));
-		        } else {
-		            existingData = new JSONObject();
-		        }
+		        pstmt.setString(1, c.getCourseName());
+		        pstmt.setInt(2, c.getSeatCount());
+		        BigDecimal fees = BigDecimal.valueOf(c.getFees());
+		        pstmt.setBigDecimal(3, fees);
 
-		        if (existingData.get("admin") == null) {
-		            existingData.put("admin", new JSONObject());
-		        }
-
-		        adminData = (JSONObject) existingData.get("admin");
-
-		        String courseName = (String) course.get("CourseName");
-		        course.remove("CourseName");
-		        adminData.put(courseName, course);
-
-		        existingData.put("admin", adminData);
-
-		        FileWriter fileWriter = new FileWriter(path);
-		        fileWriter.write(existingData.toJSONString());
-
-		        fileWriter.close();
+		        pstmt.executeUpdate();
 		        return true;
-		    } catch (Exception e) {
-		        System.out.println(e);
+		    } catch (SQLException e) {
+		        System.out.println("Error in database operation: " + e.getMessage());
 		        return false;
+		    } finally {
+		        DataConnection.closeConnection();
 		    }
 	}
 
-	 public static JSONObject loadAdminData() {
-	        try {
-	            String adminFilePath = "C:\\Users\\kanna\\git\\collegeadmission\\CollegeAdmission\\src\\adminData.json";
-	            JSONParser parser = new JSONParser();
-	            FileReader reader = new FileReader(adminFilePath);
-	            adminData = (JSONObject) parser.parse(reader);
-	            reader.close();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-			return adminData;
+	 public static ResultSet loadAdminData() {
+		 	Connection con = null;
+		    PreparedStatement pstmt = null;
+		    ResultSet rs = null;
+
+		    try {
+		        con = DataConnection.getConnection();
+		        String sql = "SELECT * FROM Courses";
+		        pstmt = con.prepareStatement(sql);
+		        rs = pstmt.executeQuery();
+		    } catch (SQLException e) {
+		        System.out.println("Error retrieving admin data: " + e.getMessage());
+		    }
+
+		    return rs;
 	    }
-	 public static JSONObject loadStudentData() {
-	        try {
-	        	 String studentFilePath = "C:\\Users\\kanna\\git\\collegeadmission\\CollegeAdmission\\src\\studentData.json";
-	             File file = new File(studentFilePath);
-	             if (file.exists()) {
-	                 JSONParser parser = new JSONParser();
-	                 FileReader reader = new FileReader(file);
-	                 studentData = (JSONObject) parser.parse(reader);
-	                 reader.close();
-	             } else {
-	                 System.out.println("Student data file does not exist.");
-	             }
-	         } catch (Exception e) {
-	             e.printStackTrace();
-	         }
-	         return studentData;
+	 @SuppressWarnings("unchecked")
+	public static ResultSet loadStudentData() {
+		    Connection con = null;
+		    java.sql.Statement stmt = null;
+		    ResultSet rs = null;
+
+		    try {
+		        con = DataConnection.getConnection();
+		        stmt = con.createStatement();
+		        String sql = "SELECT * FROM Students"; 
+
+		        rs = stmt.executeQuery(sql);
+		    } catch (SQLException e) {
+		        System.out.println("Error retrieving student data: " + e.getMessage());
+		    }
+		    return rs;
 	    }
 
 	@SuppressWarnings("unchecked")
 	public void insertStudent(Student student) {
-		String path = "C:\\Users\\kanna\\git\\collegeadmission\\CollegeAdmission\\src\\studentData.json";
-	    try {
-	        File file = new File(path);
-	        JSONObject existingStudentData;
+		
+		 Connection con = null;
+		    PreparedStatement pstmt = null;
+		    String sql = "INSERT INTO Students (Name, Gender, Course, Marks, FeesPaid) VALUES (?, ?, ?, ?, ?)";
 
-	        if (file.exists() && file.length() > 0) {
-	            JSONParser parser = new JSONParser();
-	            FileReader fileReader = new FileReader(path);
-	            existingStudentData = (JSONObject) parser.parse(fileReader);
-	        } else {
-	            existingStudentData = new JSONObject();
-	        }
+		    try {
+		        con = DataConnection.getConnection();
+		        pstmt = con.prepareStatement(sql);
+		        pstmt.setString(1, student.getName());
+		        pstmt.setString(2, student.getGender());
 
-	        if (existingStudentData.get("students") == null) {
-	            existingStudentData.put("students", new JSONObject());
-	        }
+		        int courseId = getCourseID(student.getSelectCourse(), con); 
 
-	        studentData = (JSONObject) existingStudentData.get("students");
+		        pstmt.setInt(3, courseId); 
+		        pstmt.setInt(4, student.getMarks());
+		        pstmt.setBoolean(5, student.isFeesPaid());
 
-	        JSONObject studentObj = new JSONObject();
-	        studentObj.put("Name", student.getName());
-	        studentObj.put("Gender", student.getGender());
-	        studentObj.put("Course", student.getSelectCourse());
-	        studentObj.put("Marks", student.getMarks());
-	        studentObj.put("FeesPaid", student.isFeesPaid());
+		        pstmt.executeUpdate();
+		        updateSeatCount(courseId, con);
+		    } catch (SQLException e) {
+		        System.out.println("Error in database operation: " + e.getMessage());
+		    } finally {
+		        DataConnection.closeConnection();
+		    }
+	} 
+	private void updateSeatCount(int courseId, Connection con) throws SQLException {
+		String query="UPDATE Coures SET SeatCount=SeatCount-1 WHERE CourseId=?";
+		PreparedStatement ps=con.prepareStatement(query);
+		ps.setInt(1, courseId);
+		ps.executeUpdate();
+	}
 
-	        studentData.put(String.valueOf(student.getId()), studentObj);
+	private int getCourseID(String courseName, Connection con) throws SQLException {
+	    String query = "SELECT CourseID FROM Courses WHERE CourseName = ?";
+	    PreparedStatement pstmt = con.prepareStatement(query);
+	    pstmt.setString(1, courseName);
 
-	        existingStudentData.put("students", studentData);
-
-	        FileWriter fileWriter = new FileWriter(path);
-	        fileWriter.write(existingStudentData.toJSONString());
-	        fileWriter.flush();
-	        fileWriter.close();
-	    } catch (Exception e) {
-	        e.printStackTrace();
+	    ResultSet rs = pstmt.executeQuery();
+	    if (rs.next()) {
+	        return rs.getInt("CourseID");
 	    }
+	    return 0; 
 	}
 }

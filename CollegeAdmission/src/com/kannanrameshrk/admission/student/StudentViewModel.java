@@ -1,9 +1,7 @@
 package com.kannanrameshrk.admission.student;
 
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import com.kannanrameshrk.admission.dto.Student;
 import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
@@ -38,20 +36,10 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
 	private boolean courseValid(String selectCourse) {
 		AdmissionRespository.getInstance();
-		JSONObject obj=AdmissionRespository.loadAdminData();
+		return false;
+		
 
-		 if (obj != null) {
-		        JSONObject adminCourses = (JSONObject) obj.get("admin");
-		        if (adminCourses != null && ((Map) adminCourses).containsKey(selectCourse)) {
-		            return true;
-		        } else {
-		            studentview.showErr("Invalid course selection");
-		            return false;
-		        }
-		    } else {
-		        studentview.showErr("Course are Not Avalaible in RK college");
-		        return false;
-		    }
+		
 	}
 
 	private boolean genderValid(String gender) {
@@ -70,24 +58,26 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 		return false;
 	}
 
-	public void viewCourse() {
-		 JSONObject map=AdmissionRespository.loadAdminData();
-		 if (map != null && !map.isEmpty()) {
-			    System.out.println("Courses  Seat   Fees");
-			    System.out.println("------------------------");
+	public void viewCourse(){
+		 ResultSet rs=AdmissionRespository.loadAdminData();
+		 try {
+			if (rs != null && rs.next()) {
+			        System.out.println("Courses  Seat   Fees");
+			        System.out.println("------------------------");
 
-			    JSONObject adminData = (JSONObject) map.get("admin");
-			    for (Object key : adminData.keySet()) {
-			        String courseName = (String) key;
-			        JSONObject courseDetails = (JSONObject) adminData.get(courseName);
+			        do {
+			            String courseName = rs.getString("CourseName");
+			            int seatCount = rs.getInt("SeatCount");
+			            double fees = rs.getDouble("Fees");
 
-			        int seatCount = ((Long) courseDetails.get("SeatCount")).intValue();
-			        double fees = ((Number) courseDetails.get("Fees")).doubleValue();
-
-			        System.out.printf("%s\t%d\t%.1f%n", courseName, seatCount, fees);
+			            System.out.printf("%s\t%d\t%.1f%n", courseName, seatCount, fees);
+			        } while (rs.next());
+			    } else {
+			        studentview.showErr("No Data Available...");
 			    }
-			}else {
-				studentview.showErr("No Data Available...");
-			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

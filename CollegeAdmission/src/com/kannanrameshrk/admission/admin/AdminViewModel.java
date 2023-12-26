@@ -1,7 +1,7 @@
 package com.kannanrameshrk.admission.admin;
 
-import org.json.simple.JSONObject;
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import com.kannanrameshrk.admission.dto.Course;
 import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
@@ -20,11 +20,7 @@ class AdminViewModel {
 		boolean feesIsValid=validFees(c.getFees());
 
 		if(courseNameIsValid && seatCountIsValid && feesIsValid ) {
-			 JSONObject courseDetails = new JSONObject();
-			 courseDetails.put("CourseName", c.getCourseName());
-			 courseDetails.put("SeatCount", c.getSeatCount());
-			 courseDetails.put("Fees", c.getFees());
-			boolean stored=AdmissionRespository.getInstance().insertCource(courseDetails);
+			boolean stored=AdmissionRespository.getInstance().insertCource(c);
 			if(stored) {
 				adminview.onSucess("Sucessfully Inserted");
 			}
@@ -57,26 +53,26 @@ class AdminViewModel {
 		return false;
 	}
 
-	public void viewStudentStatus() {
-		JSONObject map=AdmissionRespository.loadStudentData();
-		if (map != null && map.containsKey("students")) {
-	        JSONObject studentsData = (JSONObject) map.get("students");
+	public void viewStudentStatus()  {
+		ResultSet rs=AdmissionRespository.loadStudentData();
+		try {
+			if (rs !=null && rs.next()) {
+			    do {
+			    	String studentId=rs.getString("studentId");
+			        String name =rs.getString("name");
+			        String gender =rs.getString("Gender");
+			        String course = rs.getString("Course");
+			        String feesPaid = rs.getString("FeesPaid");
+			       String feesPaidStatus = feesPaid.equals("1") ? "YES" : "NO";
 
-	        for (Object key : studentsData.keySet()) {
-	            String studentId = (String) key;
-	            JSONObject studentDetails = (JSONObject) studentsData.get(studentId);
-
-	            String name = (String) studentDetails.get("Name");
-	            String gender = (String) studentDetails.get("Gender");
-	            String course = (String) studentDetails.get("Course");
-	            boolean feesPaid = (boolean) studentDetails.get("FeesPaid");
-	            String feesPaidStatus = feesPaid ? "YES" : "NO";
-
-	            System.out.printf("%s   %s   %s     %s      %s%n", studentId, name, gender, course, feesPaidStatus);
-	        }
-	    }else {
-	    	adminview.showError("Student not Registor in courses");
-	    }
+			        System.out.printf("%s     %s     %s     %2s      %s%n", studentId, name, gender, course, feesPaidStatus);
+			    }while(rs.next());
+			}else {
+				adminview.showError("Student not Registor in courses");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
