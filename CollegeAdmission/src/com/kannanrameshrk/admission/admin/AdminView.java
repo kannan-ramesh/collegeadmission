@@ -1,5 +1,6 @@
 package com.kannanrameshrk.admission.admin;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.Stack;
@@ -20,17 +21,18 @@ public class AdminView {
 
 	public void init(Stack<Object> backStack) {
 		Scanner input = new Scanner(System.in);
-		System.out.println("Admin page");
-		System.out.println("-----------");
+		System.out.println("\t\t-----------");
+		System.out.println("\t\tAdmin page");
+		System.out.println("\t\t-----------");
 		System.out.println("Enter UserName:");
 		String uName=input.next();
-		System.out.println("ENter Password:");
+		System.out.println("Enter Password:");
 		String password = input.next();
 		
 		if(uName.equals(userName) && password.equals(pwd)) {
 			boolean loop=true;
 			while(loop){
-				System.out.println(" 1.AddCourse\n 2.Application Status\n 3.Back");
+				System.out.println(" 1.AddCourse\n 2.Application Status\n 3.Cancelation Status\n 4.Back");
 				System.out.println("Enter your option");
 				int choice = input.nextInt();
 	
@@ -40,7 +42,7 @@ public class AdminView {
 					System.out.println("-----------");
 					System.out.println("Enter Course Name:");
 					String cName = input.next();
-					System.out.println("ENter total seat(Number Only):");
+					System.out.println("Enter total seat(Number Only):");
 					int totalSeat = input.nextInt();
 					System.out.println("Enter course Fess:");
 					double fees = input.nextDouble();
@@ -54,9 +56,19 @@ public class AdminView {
 					System.out.println("Id     Name     Gender  Course  FeesPaid");
 					System.out.println("-----------------------------------------");
 					adminviewmodel.viewStudentStatus();
+					System.out.println("-----------------------------------------");
 					break;
 				}
-				case 3: {
+				case 3:{
+					System.out.println("Cancelation Status");
+					System.out.println("-----------------------");
+					System.out.println("Id     Name     Gender  Course  FeesPaid  CancelDate           Reason");
+					System.out.println("------------------------------------------------------------------");
+					adminviewmodel.viewCancelStatus();
+					System.out.println("------------------------------------------------------------------");
+					break;
+				}
+				case 4: {
 					loop=false;
 					Navigate nav = new Navigate();
 					nav.back(backStack);
@@ -80,5 +92,17 @@ public class AdminView {
 
 	public void onSucess(String succMessage) {
 		System.out.println(succMessage);
+	}
+
+	public boolean viewStudentStatus() {
+		ResultSet rs=adminviewmodel.viewStudentStatus();
+		try {
+			if(!rs.next()) {
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 }

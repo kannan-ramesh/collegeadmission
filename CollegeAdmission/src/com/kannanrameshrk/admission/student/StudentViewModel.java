@@ -2,6 +2,8 @@ package com.kannanrameshrk.admission.student;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+
 import com.kannanrameshrk.admission.dto.Student;
 import com.kannanrameshrk.admission.repository.AdmissionRespository;
 
@@ -15,12 +17,15 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 	public void validate(Student student) {
 		boolean nameIsValid=nameValid(student.getName());
 		boolean genderIsValid=genderValid(student.getGender());
-		//boolean courseIsValid=courseValid(student.getSelectCourse());
 		boolean marksIsValid=marksValid(student.getMarks());
 
 		if(nameIsValid && genderIsValid &&  marksIsValid ) {
-			studentview.onSucess("Sucessfully Registered");
-			AdmissionRespository.getInstance().insertStudent(student);
+			boolean insert=AdmissionRespository.getInstance().insertStudent(student);
+			if(insert) {
+				studentview.onSucess("Sucessfully Registered");
+			}else {
+				studentview.showErr("Not Registered,Course Not available..");
+			}
 		}else {
 			studentview.showErr("Not Registered,Invalid Input");
 		}
@@ -34,13 +39,7 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 		return false;
 	}
 
-	private boolean courseValid(String selectCourse) {
-		AdmissionRespository.getInstance();
-		return false;
-		
-
-		
-	}
+	
 
 	private boolean genderValid(String gender) {
 		if(gender.equals("male") || gender.equals("female")) {
@@ -62,22 +61,45 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 		 ResultSet rs=AdmissionRespository.loadAdminData();
 		 try {
 			if (rs != null && rs.next()) {
-			        System.out.println("Courses  Seat   Fees");
-			        System.out.println("------------------------");
+			        System.out.println("CourseId  Courses  Seat   Fees");
+			        System.out.println("----------------------------------");
 
 			        do {
+			        	int courseId=rs.getInt("CourseID");
 			            String courseName = rs.getString("CourseName");
 			            int seatCount = rs.getInt("SeatCount");
 			            double fees = rs.getDouble("Fees");
 
-			            System.out.printf("%s\t%d\t%.1f%n", courseName, seatCount, fees);
+			            System.out.printf("%-10d %-8s %d\t %.1f%n", courseId, courseName, seatCount, fees);
+
 			        } while (rs.next());
+			        System.out.println("----------------------------------");
 			    } else {
 			        studentview.showErr("No Data Available...");
 			    }
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void insertCancellation(int studentID, int courseID, Date cancelDate, String reason) {
+		boolean reasons=reasonValid(reason);
+		if(reasons) {
+			boolean cancel=AdmissionRespository.getInstance().insertCancel(studentID,courseID,cancelDate,reason);
+			if(cancel) {
+				studentview.onSucess("Successfully Remove Your Data...");
+			}else {
+				studentview.showErr("No Success Remove Your Data...");
+			}
+		}else {
+			studentview.showErr("Your Reason is min 20 letters ");
+		}
+	}
+
+	private boolean reasonValid(String reason) {
+		if(reason.length()>20) {
+			return true;
+		}
+		return false;
 	}
 }

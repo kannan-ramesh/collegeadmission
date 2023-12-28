@@ -19,8 +19,9 @@ public class Main {
 		Scanner input =new Scanner(System.in);
 		boolean loop=true;
 		while(loop){
-			System.out.println("RK GROUP OF COLLEGE");
-			System.out.println("---------------------");
+			System.out.println("\t\t---------------------");
+			System.out.println("\t\tRK GROUP OF COLLEGE");
+			System.out.println("\t\t---------------------");
 			System.out.println(" 1.Admin\n 2.Student\n 3.Exit");
 			System.out.println("Enter your Option:");
 			int choice;

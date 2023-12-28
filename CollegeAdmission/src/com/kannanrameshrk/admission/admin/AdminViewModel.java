@@ -53,7 +53,7 @@ class AdminViewModel {
 		return false;
 	}
 
-	public void viewStudentStatus()  {
+	public ResultSet viewStudentStatus()  {
 		ResultSet rs=AdmissionRespository.loadStudentData();
 		try {
 			if (rs !=null && rs.next()) {
@@ -69,6 +69,30 @@ class AdminViewModel {
 			    }while(rs.next());
 			}else {
 				adminview.showError("Student not Registor in courses");
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+		return rs;
+	}
+
+	public void viewCancelStatus() {
+		ResultSet rs = AdmissionRespository.loadCancelData();
+		
+		try {
+			if(rs !=null && rs.next()) {
+				do {
+					String cancelId=rs.getString("CancellationID");
+					String name=rs.getString("Name");
+					String gender=rs.getString("Gender");
+					String course=rs.getString("Course");
+					String feesPaid=rs.getString("FeesPaid");
+					String cancelDate=rs.getString("CancelDate");
+					String reason=rs.getString("Reason");
+					 System.out.printf("%s     %s     %s     %2s      %s     %s       %s%n", cancelId, name, gender, course, feesPaid,cancelDate,reason);
+				}while(rs.next());
+			}else {
+				adminview.showError("Student Not Cancelation in Course...");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
