@@ -55,7 +55,8 @@ public class AdminView {
 					System.out.println("-----------------------");
 					System.out.println("Id     Name     Gender  Course  FeesPaid");
 					System.out.println("-----------------------------------------");
-					adminviewmodel.viewStudentStatus();
+					ResultSet rs=adminviewmodel.viewStudentStatus();
+					viewStudentData(rs);
 					System.out.println("-----------------------------------------");
 					break;
 				}
@@ -64,7 +65,8 @@ public class AdminView {
 					System.out.println("-----------------------");
 					System.out.println("Id     Name     Gender  Course  FeesPaid  CancelDate           Reason");
 					System.out.println("------------------------------------------------------------------");
-					adminviewmodel.viewCancelStatus();
+					ResultSet rs= adminviewmodel.viewCancelStatus();
+					viewCancelData(rs);
 					System.out.println("------------------------------------------------------------------");
 					break;
 				}
@@ -82,6 +84,50 @@ public class AdminView {
 		}else {
 			System.out.println("Invalid UserName password...");
 			return;
+		}
+		
+	}
+
+	private void viewStudentData(ResultSet rs) {
+		try {
+			if (rs !=null && rs.next()) {
+			    do {
+			    	String studentId=rs.getString("studentId");
+			        String name =rs.getString("name");
+			        String gender =rs.getString("Gender");
+			        String course = rs.getString("Course");
+			        String feesPaid = rs.getString("FeesPaid");
+			       String feesPaidStatus = feesPaid.equals("1") ? "YES" : "NO";
+
+			        System.out.printf("%s     %s     %s     %2s      %s%n", studentId, name, gender, course, feesPaidStatus);
+			    }while(rs.next());
+			}else {
+				showError("Student not Registor in courses");
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+		}
+		
+	}
+
+	private void viewCancelData(ResultSet rs) {
+		try {
+			if(rs !=null && rs.next()) {
+				do {
+					String cancelId=rs.getString("CancellationID");
+					String name=rs.getString("Name");
+					String gender=rs.getString("Gender");
+					String course=rs.getString("Course");
+					String feesPaid=rs.getString("FeesPaid");
+					String cancelDate=rs.getString("CancelDate");
+					String reason=rs.getString("Reason");
+					 System.out.printf("%s     %s     %s     %2s      %s     %s       %s%n", cancelId, name, gender, course, feesPaid,cancelDate,reason);
+				}while(rs.next());
+			}else {
+				showError("Student Not Cancelation in Course...");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		
 	}

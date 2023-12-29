@@ -55,48 +55,21 @@ class AdminViewModel {
 
 	public ResultSet viewStudentStatus()  {
 		ResultSet rs=AdmissionRespository.loadStudentData();
-		try {
-			if (rs !=null && rs.next()) {
-			    do {
-			    	String studentId=rs.getString("studentId");
-			        String name =rs.getString("name");
-			        String gender =rs.getString("Gender");
-			        String course = rs.getString("Course");
-			        String feesPaid = rs.getString("FeesPaid");
-			       String feesPaidStatus = feesPaid.equals("1") ? "YES" : "NO";
-
-			        System.out.printf("%s     %s     %s     %2s      %s%n", studentId, name, gender, course, feesPaidStatus);
-			    }while(rs.next());
-			}else {
-				adminview.showError("Student not Registor in courses");
-			}
-		} catch (SQLException e) {
-			System.out.println(e);
-		}
 		return rs;
 	}
 
-	public void viewCancelStatus() {
+	public ResultSet viewCancelStatus() {
 		ResultSet rs = AdmissionRespository.loadCancelData();
-		
 		try {
-			if(rs !=null && rs.next()) {
-				do {
-					String cancelId=rs.getString("CancellationID");
-					String name=rs.getString("Name");
-					String gender=rs.getString("Gender");
-					String course=rs.getString("Course");
-					String feesPaid=rs.getString("FeesPaid");
-					String cancelDate=rs.getString("CancelDate");
-					String reason=rs.getString("Reason");
-					 System.out.printf("%s     %s     %s     %2s      %s     %s       %s%n", cancelId, name, gender, course, feesPaid,cancelDate,reason);
-				}while(rs.next());
-			}else {
+			if(rs ==null && !rs.next()) {
 				adminview.showError("Student Not Cancelation in Course...");
+				return null;
+			}else {
+				return rs;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return rs;
 	}
-
 }

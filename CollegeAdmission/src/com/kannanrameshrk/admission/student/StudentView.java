@@ -1,5 +1,7 @@
 package com.kannanrameshrk.admission.student;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.Stack;
@@ -30,7 +32,8 @@ public class StudentView {
 			case 1 :{
 				System.out.println("view Course");
 				System.out.println("-----------");
-				studentviewmodel.viewCourse();
+				ResultSet rs=studentviewmodel.viewCourse();
+				viewCourses(rs);
 				break;
 			}
 			case 2:{
@@ -91,6 +94,30 @@ public class StudentView {
 			}
 			}
 		}
+	}
+
+	private void viewCourses(ResultSet rs) {
+		 try {
+				if (rs != null && rs.next()) {
+				        System.out.println("CourseId  Courses  Seat   Fees");
+				        System.out.println("----------------------------------");
+
+				        do {
+				        	int courseId=rs.getInt("CourseID");
+				            String courseName = rs.getString("CourseName");
+				            int seatCount = rs.getInt("SeatCount");
+				            double fees = rs.getDouble("Fees");
+
+				            System.out.printf("%-10d %-8s %d\t %.1f%n", courseId, courseName, seatCount, fees);
+
+				        } while (rs.next());
+				        System.out.println("----------------------------------");
+				    } else {
+				        showErr("No Data Available...");
+				    }
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public void showErr(String errMessage) {

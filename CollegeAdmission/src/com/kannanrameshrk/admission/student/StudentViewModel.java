@@ -57,29 +57,9 @@ import com.kannanrameshrk.admission.repository.AdmissionRespository;
 		return false;
 	}
 
-	public void viewCourse(){
+	public ResultSet viewCourse(){
 		 ResultSet rs=AdmissionRespository.loadAdminData();
-		 try {
-			if (rs != null && rs.next()) {
-			        System.out.println("CourseId  Courses  Seat   Fees");
-			        System.out.println("----------------------------------");
-
-			        do {
-			        	int courseId=rs.getInt("CourseID");
-			            String courseName = rs.getString("CourseName");
-			            int seatCount = rs.getInt("SeatCount");
-			            double fees = rs.getDouble("Fees");
-
-			            System.out.printf("%-10d %-8s %d\t %.1f%n", courseId, courseName, seatCount, fees);
-
-			        } while (rs.next());
-			        System.out.println("----------------------------------");
-			    } else {
-			        studentview.showErr("No Data Available...");
-			    }
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		 return rs;
 	}
 
 	public void insertCancellation(int studentID, int courseID, Date cancelDate, String reason) {
